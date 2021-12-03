@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { Post, User, Vote } = require("../../models");
+const sequelize = require("../../config/connection");
 
 // Get all posts
 router.get("/", (req, res) => {
@@ -64,16 +65,40 @@ router.post("/", (req, res) => {
     });
 });
 
-// VOTE MODEL
-// vote on a post
+// VOTE MODEL...vote on a post
 // PUT /api/posts/upvote
 router.put("/upvote", (req, res) => {
+  // create the vote
   Vote.create({
     user_id: req.body.user_id,
-    post_id: req.body.post_id
+    post_id: req.body.post_id,
   })
-    .then(dbPostData => res.json(dbPostData))
-    .catch(err => res.json(err));
+    .then(() => {
+      // then find the post we just voted on
+      return Post.findOne({
+        where: {
+          id: req.body.post_id,
+        },
+        attributes: [
+          "id",
+          "post_url",
+          "title",
+          "created_at",
+          // use raw MySQL aggregate function query to get a count of how many votes the post has and return it under the name `vote_count`
+          [
+            sequelize.literal(
+              "(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)"
+            ),
+            "vote_count",
+          ],
+        ],
+      });
+    })
+    .then((dbPostData) => res.json(dbPostData))
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
 });
 
 // Update a post's title
