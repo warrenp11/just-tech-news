@@ -11,4 +11,15 @@ module.exports = {
 
     return word;
   },
+  format_url: (url) => {
+    return (
+      url
+        // formats URL
+        .replace("http://", "")
+        .replace("https://", "")
+        .replace("www.", "")
+        .split("/")[0]
+        .split("?")[0]
+    );
+  },
 };
