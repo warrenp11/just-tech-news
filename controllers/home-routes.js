@@ -49,6 +49,11 @@ router.get("/", (req, res) => {
 
 // Login page route http://localhost:3001/login
 router.get("/login", (req, res) => {
+  if (req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+
   res.render("login");
 });
 
