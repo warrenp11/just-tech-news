@@ -4,7 +4,10 @@ const { Post, User, Comment } = require("../models");
 
 // Homepage route for Handlebars
 router.get("/", (req, res) => {
-    // same findAll in api/post-routes.js
+  // consolelog the session variables
+  console.log(req.session);
+
+  // same findAll in api/post-routes.js
   Post.findAll({
     attributes: [
       "id",
@@ -34,8 +37,8 @@ router.get("/", (req, res) => {
     ],
   })
     .then((dbPostData) => {
-    //   console.log(dbPostData[0]);
-    const posts = dbPostData.map(post => post.get({ plain: true }));
+      //   console.log(dbPostData[0]);
+      const posts = dbPostData.map((post) => post.get({ plain: true }));
       res.render("homepage", { posts });
     })
     .catch((err) => {
@@ -45,9 +48,8 @@ router.get("/", (req, res) => {
 });
 
 // Login page route http://localhost:3001/login
-router.get('/login', (req, res) => {
-  res.render('login');
+router.get("/login", (req, res) => {
+  res.render("login");
 });
-
 
 module.exports = router;
